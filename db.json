@@ -1,0 +1,110 @@
+{
+  "schedules": [
+    {
+      "id": 1,
+      "recipe_id": 101,
+      "recipe_name": "RecipeA",
+      "recipe_version": "v1",
+      "recipe_duration": 60,
+      "createdBy": "admin",
+      "createdDate": "12/28/2021",
+      "loop_count": 2,
+      "repeated": true,
+      "enabled": true,
+      "startTime": "1648141200",
+      "endTime": "1648148400",
+      "jobs": [
+        {
+          "job_id": 1001,
+          "recipe_id": 101,
+          "job_start": "1648141200",
+          "status": "success",
+          "job_end": "1648144800",
+          "job_info": "port4"
+        },
+        {
+          "job_id": 1002,
+          "recipe_id": 101,
+          "job_start": "1234593000",
+          "status": "running",
+          "job_end": "1648148400",
+          "job_info": "port4"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "recipe_id": 102,
+      "recipe_name": "RecipeB",
+      "recipe_version": "v1",
+      "createdBy": "engineer",
+      "createdDate": "12/26/2021",
+      "loop_count": 1,
+      "repeated": true,
+      "enabled": true,
+      "startTime": "1648152000",
+      "endTime": "1648155600",
+      "jobs": []
+    },
+    {
+      "id": 3,
+      "recipe_id": 104,
+      "recipe_name": "RecipeD",
+      "recipe_version": "v2",
+      "createdBy": "admin",
+      "createdDate": "12/26/2021",
+      "loop_count": 1,
+      "repeated": false,
+      "enabled": true,
+      "startTime": "1648155600",
+      "endTime": "1648157400",
+      "jobs": []
+    },
+    {
+      "id": 4,
+      "recipe_id": 101,
+      "recipe_name": "RecipeA",
+      "recipe_version": "v1",
+      "createdBy": "admin",
+      "createdDate": "12/26/2021",
+      "loop_count": 1,
+      "repeated": true,
+      "enabled": true,
+      "startTime": "1648152000",
+      "endTime": "1648155600",
+      "jobs": []
+    },
+    {
+      "id": 5,
+      "recipe_id": 102,
+      "recipe_name": "RecipeB",
+      "recipe_version": "v1",
+      "recipe_duration": 60,
+      "createdBy": "admin",
+      "createdDate": "12/28/2021",
+      "loop_count": 2,
+      "repeated": true,
+      "enabled": true,
+      "startTime": "1648141300",
+      "endTime": "1648148200",
+      "jobs": [
+        {
+          "job_id": 1001,
+          "recipe_id": 102,
+          "job_start": "1648141200",
+          "status": "success",
+          "job_end": "1648144800",
+          "job_info": "port4"
+        },
+        {
+          "job_id": 1002,
+          "recipe_id": 102,
+          "job_start": "1234593000",
+          "status": "running",
+          "job_end": "1648148200",
+          "job_info": "port4"
+        }
+      ]
+    }
+  ]
+}
