@@ -29,6 +29,15 @@ const getScheduledRecipes = () => {
   const p5 = momentTZ().add(1, "hours").tz("America/New_York").valueOf();
   const f5 = momentTZ().add(10, "hours").tz("America/New_York").valueOf();
 
+  const p6 = momentTZ().add(-3, "days").tz("America/New_York").valueOf();
+  const f6 = momentTZ().add(-2, "days").tz("America/New_York").valueOf();
+
+  const p7 = momentTZ().add(2, "days").tz("America/New_York").valueOf();
+  const f7 = momentTZ().add(3, "days").tz("America/New_York").valueOf();
+
+  const p8 = momentTZ().add(-2, "days").tz("America/New_York").valueOf();
+  const f8 = momentTZ().add(2, "days").tz("America/New_York").valueOf();
+
   const pastArr = [p1, p2, p3, p4, p5];
   const futureArr = [f1, f2, f3, f4, f5];
 
