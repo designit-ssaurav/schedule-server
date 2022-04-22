@@ -1,63 +1,88 @@
 const jsonServer = require("json-server");
-const { addHours } = require("date-fns");
-const { formatInTimeZone } = require("date-fns-tz");
+const momentTZ = require("moment-timezone");
+const { v4: uuid } = require("uuid");
+const fsPromises = require("fs").promises;
+const path = require("path");
 const server = jsonServer.create();
 const router = jsonServer.router("db.json");
+const db = require("./db.json");
 
-const ny1 = new Date(
-  formatInTimeZone(
-    addHours(new Date(), -11),
-    "America/New_York",
-    "yyyy-MM-dd HH:mm:ss"
-  )
-).getTime();
-const ny2 = new Date(
-  formatInTimeZone(
-    addHours(new Date(), 12),
-    "America/New_York",
-    "yyyy-MM-dd HH:mm:ss"
-  )
-).getTime();
 const middlewares = jsonServer.defaults();
-//moment().tz.setDefault("America/New_York");
-
 server.use(middlewares);
 
 server.use(
   jsonServer.rewriter({
     "/manage_schedule/api/v2/schedules?starttime=:startTime&endtime=:endTime":
-      "/schedules?startTime_gte=:startTime&endTime_lte=:endTime",
+      "/schedules?startTime=:startTime&endTime=:endTime",
   })
 );
 
-// server.use((req, res, next) => {
+const getScheduledRecipes = () => {
+  const p1 = momentTZ().add(-11, "hours").tz("America/New_York").valueOf();
+  const f1 = momentTZ().add(12, "hours").tz("America/New_York").valueOf();
+  const p2 = momentTZ().add(-10, "hours").tz("America/New_York").valueOf();
+  const f2 = momentTZ().add(-4, "hours").tz("America/New_York").valueOf();
+  const p3 = momentTZ().add(2, "hours").tz("America/New_York").valueOf();
+  const f3 = momentTZ().add(8, "hours").tz("America/New_York").valueOf();
+  const p4 = momentTZ().add(-8, "hours").tz("America/New_York").valueOf();
+  const f4 = momentTZ().add(-2, "hours").tz("America/New_York").valueOf();
+  const p5 = momentTZ().add(1, "hours").tz("America/New_York").valueOf();
+  const f5 = momentTZ().add(10, "hours").tz("America/New_York").valueOf();
 
-//   next();
-// });
+  const pastArr = [p1, p2, p3, p4, p5];
+  const futureArr = [f1, f2, f3, f4, f5];
 
-server.use(jsonServer.bodyParser);
+  return { pastArr, futureArr };
+};
 
-router.render = (req, res) => {
+const writeDBJSON = (query) => {
+  try {
+    const { pastArr, futureArr } = getScheduledRecipes();
+    let currentSchedules = [...db.schedules];
+    currentSchedules = currentSchedules.map((recipe, index) => ({
+      ...recipe,
+      id: uuid(),
+      recipe_id: uuid(),
+      recipe_name: `Recipe${uuid().substring(0, 4)}`,
+      startTime: pastArr[index],
+      endTime: futureArr[index],
+    }));
+    if (query.starttime && query.endtime) {
+      const { starttime, endtime } = query;
+      return currentSchedules.filter(
+        (schedule) =>
+          schedule.startTime >= +starttime && schedule.endTime <= +endtime
+      );
+    }
+    return currentSchedules;
+
+    // await fsPromises.writeFile(
+    //   path.join(__dirname, "db.json"),
+    //   JSON.stringify({ schedules: currentSchedules })
+    // );
+  } catch (error) {
+    console.log("Error while writting to db.json ", error);
+    return [];
+  }
+};
+
+server.use(async (req, res, next) => {
+  // await writeDBJSON();
+  next();
+});
+
+router.render = async (req, res) => {
+  //await writeDBJSON();
   const response = {};
+  const results = writeDBJSON(req.query);
+  response.count = results.length;
   response.result = res.locals.data;
-  console.log("Inside ", ny1, ny2);
-  response.result.push({
-    id: 11,
-    recipe_id: 102,
-    recipe_name: "RecipeB",
-    recipe_version: "v1",
-    recipe_duration: 60,
-    createdBy: "admin",
-    createdDate: "12/28/2021",
-    loop_count: 2,
-    repeated: true,
-    enabled: true,
-    startTime: `${ny1}`,
-    endTime: `${ny2}`,
-  });
+
+  response.result = results;
+
   setTimeout(() => {
     res.jsonp(response);
-  }, 2500);
+  }, 1500);
 };
 
 // Use default router
@@ -65,6 +90,6 @@ server.use(router);
 server.listen(3005, () => {
   console.log("\x1b[32m", "JSON Server Running on PORT 3005");
   console.log("\x1b[32m", "--------------------------------");
-  console.log("\x1b[35m", "http://localhost:3002/schedules");
+  console.log("\x1b[35m", "http://localhost:3005/schedules");
   //   console.log("\x1b[35m", "http://localhost:3002/inlets");
 });
