@@ -48,14 +48,33 @@ const writeDBJSON = (query) => {
   try {
     const { pastArr, futureArr } = getScheduledRecipes();
     let currentSchedules = [...db.schedules];
-    currentSchedules = currentSchedules.map((recipe, index) => ({
-      ...recipe,
-      id: uuid(),
-      recipe_id: uuid(),
-      recipe_name: `Recipe${uuid().substring(0, 4)}`,
-      startTime: pastArr[index],
-      endTime: futureArr[index],
-    }));
+    currentSchedules = currentSchedules.map((recipe, index) => {
+      const recipeId = uuid();
+      return {
+        ...recipe,
+        id: recipeId,
+        //recipe_id: uuid(),
+        startTime: pastArr[index],
+        endTime: futureArr[index],
+        jobs:
+          recipe.jobs.length > 0
+            ? recipe.jobs.map((job) => {
+                job.id = uuid();
+                job.recipe_id = recipeId;
+                if (job.status === "success") {
+                  job.job_start = pastArr[index];
+                  job.job_end = pastArr[index] + 60000;
+                }
+
+                if (job.status === "running") {
+                  job.job_start = futureArr[index] - 60000;
+                  job.job_end = futureArr[index];
+                }
+                return job;
+              })
+            : [],
+      };
+    });
     if (query.starttime && query.endtime) {
       const { starttime, endtime } = query;
       return currentSchedules.filter(
@@ -90,7 +109,7 @@ router.render = async (req, res) => {
   response.result = results;
 
   setTimeout(() => {
-    res.jsonp(response);
+    res.status(200).jsonp(response);
   }, 1500);
 };
 
